@@ -6,4 +6,5 @@ export interface Post {
 
 export interface TableProps {
   posts: Post[];
+  deletePost: (postId: string) => void;
 }

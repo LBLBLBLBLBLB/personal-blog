@@ -1,6 +1,6 @@
 import { TableProps } from "../types/interfaces";
 
-const Table: React.FC<TableProps> = ({ posts }) => {
+const Table: React.FC<TableProps> = ({ posts, deletePost }) => {
   return (
     <table>
       <thead>
@@ -17,7 +17,7 @@ const Table: React.FC<TableProps> = ({ posts }) => {
             <td>{post.date}</td>
             <td>
               <button>edit</button>
-              <button>delete</button>
+              <button onClick={() => deletePost(post.id)}>delete</button>
             </td>
           </tr>
         ))}

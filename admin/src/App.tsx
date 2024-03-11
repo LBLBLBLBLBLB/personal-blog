@@ -1,3 +1,5 @@
+import "./App.css";
+
 import { useState, useEffect } from "react";
 import { db } from "./firebaseConfig";
 
@@ -9,7 +11,6 @@ import {
   collection,
   getDocs,
   addDoc,
-  updateDoc,
   deleteDoc,
   doc,
   Timestamp,
@@ -21,6 +22,7 @@ function App() {
   const [newBlogName, setNewBlogName] = useState("");
   const [newArticle, setNewArticle] = useState("");
   const [newDate, setNewDate] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const postsCollectionRef = collection(db, "posts");
 
   const createPost = async () => {
@@ -30,6 +32,17 @@ function App() {
       article: newArticle,
       upload_date: timestamp,
     });
+    setFetchData(true);
+
+    setNewBlogName("");
+    setNewArticle("");
+    setNewDate("");
+    setIsModalOpen(false);
+  };
+
+  const deletePost = async (id: string) => {
+    const userDoc = doc(db, "posts", id);
+    await deleteDoc(userDoc);
     setFetchData(true);
   };
 
@@ -60,9 +73,12 @@ function App() {
   return (
     <>
       <h1>Admin Dashboard</h1>
-      <Table posts={posts} />
-      <div className="modal">
+      <Table posts={posts} deletePost={deletePost} />
+      <button onClick={() => setIsModalOpen(true)}>Add Post</button>
+
+      <div className={`modal ${isModalOpen ? "modal-active" : ""}`}>
         <input
+          value={newBlogName}
           type="text"
           placeholder="blog name"
           onChange={(event) => {
@@ -70,20 +86,34 @@ function App() {
           }}
         />
         <textarea
+          value={newArticle}
           placeholder="blog"
           onChange={(event) => {
             setNewArticle(event.target.value);
           }}
         />
         <input
+          value={newDate}
           type="date"
           onChange={(event) => {
             setNewDate(event.target.value);
           }}
         />
         <button onClick={createPost}>Submit</button>
+        <button
+          onClick={() => {
+            setIsModalOpen(false);
+          }}
+        >
+          close
+        </button>
       </div>
-      <div className="overlay"></div>
+      <div
+        onClick={() => {
+          setIsModalOpen(false);
+        }}
+        className={`overlay ${isModalOpen ? "overlay-active" : ""}`}
+      ></div>
     </>
   );
 }
