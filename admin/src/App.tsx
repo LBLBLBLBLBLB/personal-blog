@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { db } from "./firebaseConfig";
 
 import Table from "./components/Table";
+import Modal from "./components/Modal";
 
 import { Post } from "./types/interfaces";
 
@@ -23,6 +24,7 @@ function App() {
   const [newArticle, setNewArticle] = useState("");
   const [newDate, setNewDate] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const postsCollectionRef = collection(db, "posts");
 
   const createPost = async () => {
@@ -41,13 +43,13 @@ function App() {
   };
 
   const deletePost = async (id: string) => {
-    const userDoc = doc(db, "posts", id);
-    await deleteDoc(userDoc);
+    const postsDoc = doc(db, "posts", id);
+    await deleteDoc(postsDoc);
     setFetchData(true);
   };
 
   useEffect(() => {
-    const getUsers = async () => {
+    const getPosts = async () => {
       const data = await getDocs(postsCollectionRef);
       setPosts(
         data.docs.map((doc) => {
@@ -64,50 +66,27 @@ function App() {
       );
     };
     if (fetchData) {
-      getUsers();
+      getPosts();
       setFetchData(false);
     }
   }, [postsCollectionRef, fetchData]);
-  console.log(posts);
 
   return (
     <>
       <h1>Admin Dashboard</h1>
       <Table posts={posts} deletePost={deletePost} />
       <button onClick={() => setIsModalOpen(true)}>Add Post</button>
-
-      <div className={`modal ${isModalOpen ? "modal-active" : ""}`}>
-        <input
-          value={newBlogName}
-          type="text"
-          placeholder="blog name"
-          onChange={(event) => {
-            setNewBlogName(event.target.value);
-          }}
-        />
-        <textarea
-          value={newArticle}
-          placeholder="blog"
-          onChange={(event) => {
-            setNewArticle(event.target.value);
-          }}
-        />
-        <input
-          value={newDate}
-          type="date"
-          onChange={(event) => {
-            setNewDate(event.target.value);
-          }}
-        />
-        <button onClick={createPost}>Submit</button>
-        <button
-          onClick={() => {
-            setIsModalOpen(false);
-          }}
-        >
-          close
-        </button>
-      </div>
+      <Modal
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        createPost={createPost}
+        newBlogName={newBlogName}
+        setNewBlogName={setNewBlogName}
+        newArticle={newArticle}
+        setNewArticle={setNewArticle}
+        newDate={newDate}
+        setNewDate={setNewDate}
+      />
       <div
         onClick={() => {
           setIsModalOpen(false);

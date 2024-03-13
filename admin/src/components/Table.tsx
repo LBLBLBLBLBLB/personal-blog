@@ -16,7 +16,6 @@ const Table: React.FC<TableProps> = ({ posts, deletePost }) => {
             <td>{post.name}</td>
             <td>{post.date}</td>
             <td>
-              <button>edit</button>
               <button onClick={() => deletePost(post.id)}>delete</button>
             </td>
           </tr>
